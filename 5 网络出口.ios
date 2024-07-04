@@ -15,7 +15,7 @@ interface g0/0/9
 
 interface g0/0/10
  nat server protocol tcp global current-interface 8081 inside 10.1.60.101 www
- nat outbound 2000 address-group 1
+ 
 
 
 #X_T1_FW1

@@ -131,7 +131,7 @@ interface GigabitEthernet 0/0/2
  portswitch
  undo shutdown
  port link-type trunk
- port trunk allow-packet vlan 206 207
+ port trunk allow-pass vlan 206 207
  undo port trunk allow-pass vlan 1
 
 interface vlan 204
