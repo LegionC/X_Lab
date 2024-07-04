@@ -1,2 +1,22 @@
-#X_T1_FW1
+#X_T1_Core1
 
+acl number 3000
+ rule permit ip source 10.1.51.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.52.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.53.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.54.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.55.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+
+interface vlan 51 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop  10.1.200.22
+interface vlan 52 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop  10.1.200.22
+interface vlan 53 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop  10.1.200.22
+interface vlan 54 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop  10.1.200.22
+interface vlan 55 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop  10.1.200.22
+
+
+ #X_T1_FW1
