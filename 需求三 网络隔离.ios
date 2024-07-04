@@ -1,0 +1,184 @@
+#X_T1_FW1
+vsys enable
+vsys name Employee
+vsys name Guest
+
+vsys name Employee
+ assign interface Loopback 1
+ assign vlan 204
+ assign vlan 206
+
+vsys name Guest
+ assign interface Loopback 2
+ assign vlan 205
+ assign vlan 207
+
+//需要重新刷一下地址
+
+switch vsys Employee
+sys
+firewall zone untrust
+ add interface vlan 204
+firewall zone trust
+ add interface vlan 206
+
+switch vsys Guest
+sys
+firewall zone untrust
+ add interface vlan 205
+firewall zone trust
+ add instance vlan 207
+
+ospf 2 vpn-instance Employee router-id 10.1.0.8 
+ area 1
+  network 10.1.0.8 0.0.0.0
+  network 10.1.200.14 0.0.0.0
+  network 10.1.200.22 0.0.0.0
+
+ospf 3 vpn-instance Guest router-id 10.1.0.9
+ area 2
+  network 10.1.0.9 0.0.0.0
+  network 10.1.200.18 0.0.0.0
+  network 10.1.200.26 0.0.0.0
+
+
+#X_T1_Core1
+
+interface vlan 206
+ ip binding vpn-instance Employee
+ ip add 10.1.200.21 30
+
+interface vlan 207
+ ip binding vpn-instance Guest
+ ip add 10.1.200.25 30
+
+
+
+ospf 1 router-id 10.1.0.3
+//vlan 204
+ area 1
+  network 10.1.200.13 0.0.0.0
+//vlan 205 
+ area 2
+  network 10.1.200.17 0.0.0.0
+
+ospf 2 vpn-instance Employee route-id 10.1.0.4
+//vlan 206
+ area 1 
+  network 10.1.200.21 0.0.0.0
+
+ospf 3 vpn-instance Guest router-id 10.1.0.5
+//vlan 207
+ area 2
+  network 10.1.200.25 0.0.0.0
+ 
+
+#X_T1_FW1
+
+//允许防火墙两个虚拟系统ospf流量的通过，建立邻居
+switch vsys Employee
+ security-policy
+  rule name permit_ospf_in
+   source-zone trust untrust
+   destination-zone local
+   service ospf 
+   action permit
+  
+  rule name permit_ospf_out
+   source-zone local
+   destination-zone trust untrust
+   service ospf
+   action permit
+
+switch vsys Guest
+ security-policy
+  rule name permit_ospf_in
+   source-zone trust untrust
+   destination-zone local
+   service ospf
+   action permit
+ security-policy
+  rule name permit_ospf_out
+   source-zone local
+   destination-zone trust untrust
+   service ospf
+   action permit
+
+ospf 2 vpn-instance Employee router-id 10.1.0.8
+ vpn-instance-capability simple
+
+ospf 3 vpn-instance Guest router 10.1.0.9
+ vpn-instance-capability simple
+
+////////// 这段功能未知
+ip ip-prefix new deny 10.2.0.0 16 greater-equal 24 less-equal 32
+ip ip-prefix new deny 10.3.0.0 16 greater-equal 24 less-equal 32
+ip ip-prefix new deny 10.100.0.0 16 greater-equal 24 less-equal 32
+ip ip-prefix new permit 0.0.0.0  0 less-equal 32 
+
+ospf 3 vpn-instance Guest router-id 10.1.0.9
+ filter-policy ip-prefix new import
+///////////
+
+#X_T1_Core1
+
+ospf 2 vpn-instance Employee router-id 10.1.0.4
+ vpn-instance-capability simple
+
+ospf 3 vpn-instance Guest router-id 10.1.0.5
+ vpn-instance-capability simple
+
+ip ip-prefix employee deny 10.1.11.0 24
+ip ip-prefix employee deny 10.1.12.0 24
+ip ip-prefix employee deny 10.1.13.0 24
+ip ip-prefix employee deny 10.1.14.0 24
+ip ip-prefix employee deny 10.1.15.0 24
+ip ip-prefix employee deny 10.1.21.0 24
+ip ip-prefix employee deny 10.1.22.0 24
+ip ip-prefix employee deny 10.1.23.0 24
+ip ip-prefix employee deny 10.1.24.0 24
+ip ip-prefix employee deny 10.1.25.0 24
+ip ip-prefix employee deny 10.1.31.0 24
+ip ip-prefix employee deny 10.1.32.0 24
+ip ip-prefix employee deny 10.1.33.0 24
+ip ip-prefix employee deny 10.1.34.0 24
+ip ip-prefix employee deny 10.1.35.0 24
+ip ip-prefix employee deny 10.1.41.0 24
+ip ip-prefix employee deny 10.1.42.0 24
+ip ip-prefix employee deny 10.1.43.0 24
+ip ip-prefix employee deny 10.1.44.0 24
+ip ip-prefix employee deny 10.1.45.0 24
+ip ip-prefix employee deny 10.1.51.0 24
+ip ip-prefix employee deny 10.1.52.0 24
+ip ip-prefix employee deny 10.1.53.0 24
+ip ip-prefix employee deny 10.1.54.0 24
+ip ip-prefix employee deny 10.1.55.0 24
+ip ip-prefix employee deny 10.1.60.0 24
+ip ip-prefix employee permit 0.0.0.0 0 less-equal 32
+
+ip ip-prefix guest deny 10.1.101.0 24
+ip ip-prefix guest deny 10.1.102.0 24
+ip ip-prefix guest deny 10.1.103.0 24
+ip ip-prefix guest deny 10.1.104.0 24
+ip ip-prefix guest deny 10.1.105.0 24
+ip ip-prefix guest permit 0.0.0.0 0 le 32
+
+////////这段功能未知
+ip ip-prefix new deny 10.2.0.0 16 greater-equal 24 less-equal 32
+ip ip-prefix new deny 10.3.0.0 16 greater-equal 24 less-equal 32
+ip ip-prefix new deny 10.100.0.0 16 greater-equal 24 less-equal 32
+ip ip-prefix new permit 0.0.0.0 0 less-equal 32
+///////
+
+ospf 1
+ area 1
+  filter ip-prefix guest import
+ area 2
+  filter ip-prefix employee import 
+
+//////这段功能未知
+ospf 3 vpn-instance Guest router-id 10.1.0.5
+ filter ip-prefix new import
+//////
+
+
