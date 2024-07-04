@@ -1,0 +1,74 @@
+#X_T1_AGG1 & X_T2_AGG1
+
+radius-server template Employee
+ radius-server shared-key cipher Huawei@123
+ radius-server authentication 10.1.60.2 1812
+ radius-server accounting 10.1.60.2 1813
+
+radius-server authorization 10.1.60.2 shared-key cipher Huawei@123
+
+aaa
+ authentication-scheme Employee
+  authentication-mode radius
+ accounting-scheme Employee
+  accounting-mode radius
+ 
+ domain employee 
+  authentication-scheme Employee
+  accounting-scheme Employee
+  radius-server Employee
+
+mac-access-profile name Employee
+dot1x-access-profile name Employee
+
+authentication-profile name Employee
+ dot1x-access-profile Employee
+ mac-access-profile Employee
+ authentication mode multi-authen max-user 500
+ access-domain employee force
+ authentication dot1x-mac-bypass
+
+interface Eth-Trunk 2
+ authentication-profile Employee
+
+interface Eth-Trunk 3
+ authentication-profile Employee
+
+
+#X_T1_AGG1
+
+vlan pool market
+ vlan 11 to 15
+vlan pool procure
+ vlan 21 to 25
+
+#X_T2_AGG1
+
+vlan pool finance 
+ vlan 31 to 35
+vlan pool hr
+ vlan 41 to 45
+
+#X_T1_ACC1/X_T1_ACC2/X_T2_ACC1/X_T2_ACC2
+
+l2protocol-tunnel user-defined-protocol dot1x protocol-mac 0180-c200-0003 group-mac 0100-0ccd-0002
+
+interface Eth-Trunk 1
+ l2protocol-tunnel user-defined-protocol dot1x enable
+
+interface range GigabitEthernet 0/0/1 to GigabitEthernet 0/0/20
+ l2protocol-tunnel user-defined-protocol dot1x enable
+ 
+ #X_T1_AGG1 & X_T2_AGG1
+
+ aaa
+  authentication-scheme ap_noauthen
+   authentication-mode none
+  domain ap_noauthen
+   authentication-scheme ap_noauthen
+
+#X_T1_AGG1 ->X_T1_ACC1 -> dis mac-address
+domain ap_noauthen mac-authen force mac-address 446a-2e0e-b5a0 mask ffff-ffff-ffff
+
+#X_T2_AGG1 ->X_T2_ACC1 -> dis mac-address
+domain ap_noauthen mac-authen force mac-address 446a-2e0e-ad00 mask ffff-ffff-ffff
