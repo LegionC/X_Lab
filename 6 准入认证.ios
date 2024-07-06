@@ -72,3 +72,11 @@ domain ap_noauthen mac-authen force mac-address 446a-2e0e-b5a0 mask ffff-ffff-ff
 
 #X_T2_AGG1 ->X_T2_ACC1 -> dis mac-address
 domain ap_noauthen mac-authen force mac-address 446a-2e0e-ad00 mask ffff-ffff-ffff
+
+//window 服务
+//wired AutoConfig 启用
+//打开网卡
+//身份验证
+//指定身份验证模式
+//用户身份验证 -- 保存凭据
+//输入用户名 密码
