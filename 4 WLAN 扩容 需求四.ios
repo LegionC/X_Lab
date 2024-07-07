@@ -56,7 +56,7 @@ wlan
 
  ap-group name X
   vap-profile guest wlan 1 radio all
-  vap-profile employee wlan 2 raido all
+  vap-profile employee wlan 2 radio all
 
  ap auth-mode mac-auth
 
