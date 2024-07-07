@@ -97,7 +97,7 @@ switch vsys Guest
   rule name permit_guest_to_internet
    source-zone trust
    destination-zone untrust
-   source-address address-set Guest
+   source-address address-set guest
    action permit 
    
 

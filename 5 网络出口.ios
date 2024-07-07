@@ -9,12 +9,14 @@ acl 2000
  rule permit 
 
 nat address-group 1 10.255.4.2 10.255.4.100
+//检查一下是不是配置错了 是不是要配置在接口下面
 
 interface g0/0/9
  nat outbound 2000
 
 interface g0/0/10
  nat server protocol tcp global current-interface 8081 inside 10.1.60.101 www
+ nat outbound 2000 address-group 1
  
 
 
