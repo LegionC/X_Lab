@@ -354,23 +354,28 @@ interface lo2
 
 
 //下一步建立ospf
+
 #X_T1_Export1
 ospf 1 router-id 10.1.0.1 
+ //宣告默认路由
  default-route-advertise
  area 0
   network 10.1.0.1 0.0.0.0
   network 10.1.200.1 0.0.0.0
 
+//建立两条默认路由
 ip route-static 0.0.0.0 0 10.255.1.254
 ip route-static 0.0.0.0 0 10.255.2.254
 
 #X_T1_Export2
 ospf 1 router-id 10.1.0.2
+ //宣告默认路由
  default-route-advertise
  area 0 
   network 10.1.0.2 0.0.0.0
   network 10.1.200.5 0.0.0.0
 
+//建立两条默认路由
 ip route-static 0.0.0.0 0 10.255.3.254
 ip route-static 0.0.0.0 0 10.255.4.254
 
