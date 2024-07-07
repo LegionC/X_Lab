@@ -1,3 +1,13 @@
+//配置每个接口
+//X_T1_Export1   X_T1_Export2
+//
+//        X_T1_Core1
+//                          X_T1_AC1
+//                          X_T1_FW1
+//X_T1_AGG1      X_T2_AGG1
+
+
+
 
 #X_T1_Export1
 sysname X_T1_Export1
@@ -280,6 +290,9 @@ interface Eth-Trunk 2
  port hybrid untagged vlan 31 to 35 41 to 45
 interface Eth-Trunk 3
  port hybrid untagged vlan 31 to 35 41 to 45
+
+
+//配置VPN 实例
 
 #X_T1_Core1
 ip vpn-instance Employee

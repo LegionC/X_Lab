@@ -1,4 +1,4 @@
-堆叠
+//堆叠
 
 #X_T2_AGG1-1
 
@@ -34,6 +34,8 @@ interface stack-port 0/2
 
 //验证方式 dis stack
 
+
+//链路聚合
 #X_T1_Core1
 
 vlan batch 100 208 209
