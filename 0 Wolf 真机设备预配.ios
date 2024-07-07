@@ -77,10 +77,10 @@ wlan
   radio 0
    vap-profile guest wlan 1
    vap-profile employee wlan 2
-  raido 1
+  radio 1
    vap-profile guest wlan 1
    vap-profile employee wlan 2
-  raido 2 
+  radio 2 
    vap-profile guest wlan 1
    vap-profile employee wlan 2
  
