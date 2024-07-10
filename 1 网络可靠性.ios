@@ -87,7 +87,7 @@ interface Eth-Trunk 1
 sysname X_T2_ACC1
 vlan batch 100
 
-interface Eth-Trunk 2
+interface Eth-Trunk 1
  port link-type trunk
  port trunk allow-pass vlan 100
  mode lacp

@@ -597,3 +597,58 @@ interface Eth-Trunk 2
 interface Eth-Trunk 3
  port hybrid untagged vlan 31 to 35 41 to 45 
 
+
+#X_T1_Core1
+
+//为了让不同的VPN 实例隔离路由创建ip-prefix
+//然后在ospf 1 area 1 
+//ospf 1 area 2 
+//分别调用
+
+//ip-prefix employee 配置
+ip ip-prefix employee deny 10.1.11.0 24
+ip ip-prefix employee deny 10.1.12.0 24
+ip ip-prefix employee deny 10.1.13.0 24
+ip ip-prefix employee deny 10.1.14.0 24
+ip ip-prefix employee deny 10.1.15.0 24
+
+ip ip-prefix employee deny 10.1.21.0 24
+ip ip-prefix employee deny 10.1.22.0 24
+ip ip-prefix employee deny 10.1.23.0 24
+ip ip-prefix employee deny 10.1.24.0 24
+ip ip-prefix employee deny 10.1.25.0 24
+
+ip ip-prefix employee deny 10.1.31.0 24
+ip ip-prefix employee deny 10.1.32.0 24
+ip ip-prefix employee deny 10.1.33.0 24
+ip ip-prefix employee deny 10.1.34.0 24
+ip ip-prefix employee deny 10.1.35.0 24
+
+ip ip-prefix employee deny 10.1.41.0 24
+ip ip-prefix employee deny 10.1.42.0 24
+ip ip-prefix employee deny 10.1.43.0 24
+ip ip-prefix employee deny 10.1.44.0 24
+ip ip-prefix employee deny 10.1.45.0 24
+
+ip ip-prefix employee deny 10.1.60.0 24
+
+ip ip-prefix employee permit 0.0.0.0 0 less-equal 32
+
+//ip-prefix guest 配置
+ip ip-prefix guest deny 10.1.101.0 24 
+ip ip-prefix guest deny 10.1.102.0 24 
+ip ip-prefix guest deny 10.1.103.0 24 
+ip ip-prefix guest deny 10.1.104.0 24 
+ip ip-prefix guest deny 10.1.105.0 24 
+
+ip ip-prefix guest permit 0.0.0.0 0 less-equal 32
+
+//在ospf 1 area 1 & area 2 调用
+
+ospf 1
+ area 1
+  filter ip-prefix guest import
+ area 2
+  filter ip-prefix employee import 
+
+
