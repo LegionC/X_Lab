@@ -1174,3 +1174,58 @@ ip route-static vpn-instance Employee 10.1.102.0 24 vpn-instance Guest
 ip route-static vpn-instance Employee 10.1.103.0 24 vpn-instance Guest
 ip route-static vpn-instance Employee 10.1.104.0 24 vpn-instance Guest
 ip route-static vpn-instance Employee 10.1.105.0 24 vpn-instance Guest
+
+
+//隐藏需求Y 园区 Store Z园区 和X 园区互通
+
+switch vsys Employee
+ ip address-set caiwuhr type group
+  address 10.1.31.0 mask 24
+  address 10.1.32.0 mask 24
+  address 10.1.33.0 mask 24
+  address 10.1.34.0 mask 24
+  address 10.1.35.0 mask 24
+  address 10.1.41.0 mask 24
+  address 10.1.42.0 mask 24
+  address 10.1.43.0 mask 24
+  address 10.1.44.0 mask 24
+  address 10.1.45.0 mask 24
+ 
+ ip address-set YZStore type group
+  address 10.2.31.0 mask 24
+  address 10.2.32.0 mask 24
+  address 10.2.33.0 mask 24
+  address 10.2.34.0 mask 24
+  address 10.2.35.0 mask 24
+  address 10.2.41.0 mask 24
+  address 10.2.42.0 mask 24
+  address 10.2.43.0 mask 24
+  address 10.2.44.0 mask 24
+  address 10.2.45.0 mask 24
+  address 10.2.51.0 mask 24
+  address 10.2.52.0 mask 24
+  address 10.2.53.0 mask 24
+  address 10.2.54.0 mask 24
+  address 10.2.55.0 mask 24
+
+  address 10.3.101.0 mask 24
+  address 10.100.2.0 mask 24
+
+security-policy
+ rule name X_TO_Z
+  source-zone trust
+  destination-zone untrust
+  source-address address-set caigoushichang caiwuhr wlan
+  destination-address address-set YZStore
+  action permit 
+
+ rule name X_TO_Z
+  source-zone untrust
+  destination-zone trust
+  source-address address-set YZStore
+  destination-address address-set caigoushichang caiwuhr wlan 
+  action permit 
+
+/移动访问互联网的安全策略到最后
+ rule move inner_to_internet after Z_TO_X
+
