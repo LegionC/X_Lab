@@ -1229,3 +1229,6 @@ security-policy
 /移动访问互联网的安全策略到最后
  rule move inner_to_internet after Z_TO_X
 
+
+//最后Employee security policy 有8条
+//Guest security policy 有5条
