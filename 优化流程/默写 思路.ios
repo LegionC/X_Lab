@@ -475,3 +475,361 @@ int eth-t 2
  p h u v 11 to 15 21 to 25
 int eth-t 3
  p h u v 11 to 15 21 to 25
+
+#X_T2_AGG1
+
+dhcp enable
+
+vlan 100 209
+
+int vlan 209
+ ip add 10.1.200.34 30
+
+int Loopback0
+ ip add 10.1.0.7 32
+
+vlan batch 31 to 35 41 to 45
+
+int vlan 31
+ ip add 10.1.31.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 32
+ ip add 10.1.32.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 33
+ ip add 10.1.33.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 34
+ ip add 10.1.34.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 35
+ ip add 10.1.35.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 41
+ ip add 10.1.41.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 42
+ ip add 10.1.42.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 43
+ ip add 10.1.43.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 44
+ ip add 10.1.44.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 45
+ ip add 10.1.45.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+
+ospf 1 router-id 10.1.0.7
+ area 1
+  network 10.1.0.7 0.0.0.0
+  network 10.1.31.254 0.0.0.0
+  network 10.1.32.254 0.0.0.0
+  network 10.1.33.254 0.0.0.0
+  network 10.1.34.254 0.0.0.0
+  network 10.1.35.254 0.0.0.0
+  network 10.1.41.254 0.0.0.0
+  network 10.1.42.254 0.0.0.0
+  network 10.1.43.254 0.0.0.0
+  network 10.1.44.254 0.0.0.0
+  network 10.1.45.254 0.0.0.0
+  network 10.1.200.34 0.0.0.0
+
+int eth-t 2
+ p h u v 31 to 35 41 to 45
+int eth-t 3
+ p h u v 31 to 35 41 to 45
+
+
+#X_T1_Core1
+
+ip ip-prefix employee deny 10.1.11.0 24
+ip ip-prefix employee deny 10.1.12.0 24
+ip ip-prefix employee deny 10.1.13.0 24
+ip ip-prefix employee deny 10.1.14.0 24
+ip ip-prefix employee deny 10.1.15.0 24
+ip ip-prefix employee deny 10.1.21.0 24
+ip ip-prefix employee deny 10.1.22.0 24
+ip ip-prefix employee deny 10.1.23.0 24
+ip ip-prefix employee deny 10.1.24.0 24
+ip ip-prefix employee deny 10.1.25.0 24
+ip ip-prefix employee deny 10.1.31.0 24
+ip ip-prefix employee deny 10.1.32.0 24
+ip ip-prefix employee deny 10.1.33.0 24
+ip ip-prefix employee deny 10.1.34.0 24
+ip ip-prefix employee deny 10.1.35.0 24
+ip ip-prefix employee deny 10.1.41.0 24
+ip ip-prefix employee deny 10.1.42.0 24
+ip ip-prefix employee deny 10.1.43.0 24
+ip ip-prefix employee deny 10.1.44.0 24
+ip ip-prefix employee deny 10.1.45.0 24
+ip ip-prefix employee deny 10.1.60.0 24
+ip ip-prefix employee permit 0.0.0.0 0 le 32
+
+
+ip ip-prefix guest deny 10.1.101.0 24
+ip ip-prefix guest deny 10.1.102.0 24
+ip ip-prefix guest deny 10.1.103.0 24
+ip ip-prefix guest deny 10.1.104.0 24
+ip ip-prefix guest deny 10.1.105.0 24
+ip ip-prefix guest permit 0.0.0.0 0 le 32
+
+ospf 1 
+ a 1
+  filter ip-prefix guest import 
+ a 2
+  filter ip-prefix employee import 
+
+X_T1_AC1
+
+wlan 
+ ap auth-mode no-auth
+
+vlan pool vlan51 
+ vlan 51 to 55
+vlan pool vlan101
+ vlan 101 to 105
+
+
+wlan
+ regulatory-domain-profile name hcie
+  country-code cn
+
+ ap-group name X
+  regulatory-domain-profile hcie
+
+security-profile name employee
+ security wpa-wpa2 psk pass-phrase Huawei@123 aes
+security-profile name guest
+ security wpa-wpa2 psk pass-phrase Huawei@123 aes
+
+ssid-profile name employee
+ ssid X_Employee_001
+ssid-profile name guest
+ ssid X_Guest_001
+
+vap-profile name employee
+ forward-mode tunnel
+ service-vlan vlan-pool vlan51
+ security-profile employee
+ ssid-profiel employee
+vap-profile name guest
+ forward-mode tunnel
+ service-vlan vlan-pool vlan101
+ security-profile guest
+ ssid-profiel guset
+
+ap-id 0
+ ap-group X
+ ap-name X_T1_AP1
+ap-id 1
+ ap-group X
+ ap-name X_T2_AP1
+
+ap-group name X
+ vap-profile guest wlan 1 radio all
+ vap-profile employee wlan 2 radio all
+
+ap auth-mode mac-auth
+
+#X_T1_Core1
+
+dhcp enable
+
+ip pool wire_finace1
+ vpn-instance Employee
+ gateway-list 10.1.31.254
+ network 10.1.31.0 mask 24
+ip pool wire_finace2
+ vpn-instance Employee
+ gateway-list 10.1.32.254
+ network 10.1.32.0 mask 24
+ip pool wire_finace3
+ vpn-instance Employee
+ gateway-list 10.1.33.254
+ network 10.1.33.0 mask 24
+ip pool wire_finace4
+ vpn-instance Employee
+ gateway-list 10.1.34.254
+ network 10.1.34.0 mask 24
+ip pool wire_finace5
+ vpn-instance Employee
+ gateway-list 10.1.35.254
+ network 10.1.35.0 mask 24
+
+ip pool wire_hr1
+ vpn-instance Employee
+ gateway-list 10.1.41.254
+ network 10.1.41.0 mask 24
+ip pool wire_hr2
+ vpn-instance Employee
+ gateway-list 10.1.42.254
+ network 10.1.42.0 mask 24
+ip pool wire_hr3
+ vpn-instance Employee
+ gateway-list 10.1.43.254
+ network 10.1.43.0 mask 24
+ip pool wire_hr4
+ vpn-instance Employee
+ gateway-list 10.1.44.254
+ network 10.1.44.0 mask 24
+ip pool wire_hr1
+ vpn-instance Employee
+ gateway-list 10.1.45.254
+ network 10.1.45.0 mask 24
+
+ip pool wire_market1
+ vpn-instance Employee
+ gateway-list 10.1.11.254
+ network 10.1.11.0 mask 24
+ip pool wire_market2
+ vpn-instance Employee
+ gateway-list 10.1.12.254
+ network 10.1.12.0 mask 24
+ip pool wire_market3
+ vpn-instance Employee
+ gateway-list 10.1.13.254
+ network 10.1.13.0 mask 24
+ip pool wire_market4
+ vpn-instance Employee
+ gateway-list 10.1.14.254
+ network 10.1.14.0 mask 24
+ip pool wire_market5
+ vpn-instance Employee
+ gateway-list 10.1.15.254
+ network 10.1.15.0 mask 24
+
+ip pool wire_purchase1
+ vpn-instance Employee
+ gateway-list 10.1.21.254
+ network 10.1.21.0 mask 24
+ip pool wire_purchase2
+ vpn-instance Employee
+ gateway-list 10.1.22.254
+ network 10.1.22.0 mask 24
+ip pool wire_purchase3
+ vpn-instance Employee
+ gateway-list 10.1.23.254
+ network 10.1.23.0 mask 24
+ip pool wire_purchase4
+ vpn-instance Employee
+ gateway-list 10.1.24.254
+ network 10.1.24.0 mask 24
+ip pool wire_purchase5
+ vpn-instance Employee
+ gateway-list 10.1.25.254
+ network 10.1.25.0 mask 24
+
+
+ip pool wireless_employee1
+ vpn-instance Employee
+ gateway-list 10.1.51.254
+ network 10.1.51.0 mask 24
+ip pool wireless_employee2
+ vpn-instance Employee
+ gateway-list 10.1.52.254
+ network 10.1.52.0 mask 24
+ip pool wireless_employee3
+ vpn-instance Employee
+ gateway-list 10.1.53.254
+ network 10.1.53.0 mask 24
+ip pool wireless_employee4
+ vpn-instance Employee
+ gateway-list 10.1.54.254
+ network 10.1.54.0 mask 24
+ip pool wireless_employee5
+ vpn-instance Employee
+ gateway-list 10.1.55.254
+ network 10.1.55.0 mask 24
+
+ip pool wireless_guest1
+ vpn-instance Guest
+ gateway-list 10.1.101.254
+ network 10.1.101.0 mask 24
+ip pool wireless_guest2
+ vpn-instance Guest
+ gateway-list 10.1.102.254
+ network 10.1.102.0 mask 24
+ip pool wireless_guest3
+ vpn-instance Guest
+ gateway-list 10.1.103.254
+ network 10.1.103.0 mask 24
+ip pool wireless_guest4
+ vpn-instance Guest
+ gateway-list 10.1.104.254
+ network 10.1.104.0 mask 24
+ip pool wireless_guest5
+ vpn-instance Guest
+ gateway-list 10.1.105.254
+ network 10.1.105.0 mask 24
+
+interface vlan51
+ dhcp select global
+interface vlan52
+ dhcp select global
+interface vlan53
+ dhcp select global
+interface vlan54
+ dhcp select global
+interface vlan55
+ dhcp select global
+
+interface vlan101
+ dhcp select global
+interface vlan102
+ dhcp select global
+interface vlan103
+ dhcp select global
+interface vlan104
+ dhcp select global
+interface vlan105
+ dhcp select global
+interface vlan208
+ dhcp select global
+interface vlan209
+ dhcp select global
+
+#X_T1_Export2
+
+acl 2000
+ rule permit 
+
+nat address-group 1 10.255.4.2 10.255.4.100
+
+interface g0/0/9
+ nat outbound 2000
+
+interface g0/0/10
+ nat server protocol tcp global current-interface 8081 inside 10.1.60.101 www
+ nat outbound 2000 address-group 1
+
+
+#X_T1_FW1
+switch vsys Employee
+ security policy
+  rule name permit_untrust_trust60.101
+   source-zone untrust
+   destionation-zone trust
+   destination-address 10.1.60.101 mask 255.255.255.255
+   service http
+   action permit 
+
+#X_T1_Core1
+
+acl number 3001
+ rule permit ip source 10.1.60.101 0
+
+
+interface vlan 204
+ traffic-redirect inbound acl 3001 ip-nexthop 10.1.200.5
