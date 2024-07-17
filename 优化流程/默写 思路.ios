@@ -833,3 +833,93 @@ acl number 3001
 
 interface vlan 204
  traffic-redirect inbound acl 3001 ip-nexthop 10.1.200.5
+
+
+
+//网络安全了
+
+X_T1_Core1
+
+acl number 3000
+ rule permit ip source 10.1.51.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.52.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.53.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.54.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+ rule permit ip source 10.1.55.0 0.0.0.255 destination 10.1.60.0 0.0.0.255
+
+int vlan 51 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
+int vlan 52
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
+int vlan 53 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
+int vlan 54
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
+int vlan 55 
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
+
+
+//最后重头戏来了
+
+switch vsys Employee 
+ security-policy
+  default packet-filter intrazone enable
+
+ ip address-set wlan type group
+  address 10.1.51.0 mask 24
+  address 10.1.52.0 mask 24
+  address 10.1.53.0 mask 24
+  address 10.1.54.0 mask 24
+  address 10.1.55.0 mask 24
+ 
+ security-policy
+  rule name permit_trust_untrust60.100
+   source-zone trust
+   destination-zone untrust
+   source-address address-set wlan
+   destination-address 10.1.60.100 mask 255.255.255.255
+   action permit 
+
+  
+switch vsys Guest
+
+ ip address-set guest type group
+  address 10.1.101.0 mask 24
+  address 10.1.102.0 mask 24
+  address 10.1.103.0 mask 24
+  address 10.1.104.0 mask 24
+  address 10.1.105.0 mask 24
+ 
+ ip service-set Guest_Service type object
+  service protocol tcp destination-port 3389
+
+ security-policy
+  rule name permit_trust_untrust60.99
+   source-zone trust
+   destionation-zone untrust
+   source-address address-set guest
+   destination-address 10.1.60.99 mask 255.255.255.255
+   serivce Guest_Service 
+   action permit 
+
+   rule name deny_trust_untrust60.0
+   source-zone trust
+   destionation-zone untrust
+   source-address address-set guest
+   destination-address 10.1.60.99 mask 255.255.255.255
+   action deny 
+
+  
+switch vsys Employee
+ 
+ ip address-set guest type group
+  address 10.1.101.0 mask 24
+  address 10.1.102.0 mask 24
+  address 10.1.103.0 mask 24
+  address 10.1.104.0 mask 24
+  address 10.1.105.0 mask 24
+
+ ip service-set Guest_Service type object
+  service protocol tcp destination-port 3389
+
+ 

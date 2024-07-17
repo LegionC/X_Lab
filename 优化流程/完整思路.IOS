@@ -91,7 +91,7 @@ interface Eth-Trunk 1
  mode lacp
  trunkport GigabitEthernet 0/0/23 0/0/24
 
-//g0/0/2 放通vlan 100 access
+//g0/0/22 放通vlan 100 access
 interface GigabitEthernet 0/0/22
  port link-type access
  port default vlan 100
@@ -225,6 +225,7 @@ interface vlan 204
  ip add 10.1.200.13 30
 interface vlan 205
  ip add 10.1.200.17 30
+
 interface vlan 206
  ip binding vpn-instance Employee
  ip add 10.1.200.21 30
@@ -831,23 +832,23 @@ ip pool wireless_employee5
  network 10.1.55.0 mask 24
 
 ip pool wireless_guest1
- vpn-instance guest
+ vpn-instance Guest
  gateway-list 10.1.101.254
  network 10.1.101.0 mask 24
 ip pool wireless_guest2
- vpn-instance guest
+ vpn-instance Guest
  gateway-list 10.1.102.254
  network 10.1.102.0 mask 24
 ip pool wireless_guest3
- vpn-instance guest
+ vpn-instance Guest
  gateway-list 10.1.103.254
  network 10.1.103.0 mask 24
 ip pool wireless_guest4
- vpn-instance guest
+ vpn-instance Guest
  gateway-list 10.1.104.254
  network 10.1.104.0 mask 24
 ip pool wireless_guest5
- vpn-instance guest
+ vpn-instance Guest
  gateway-list 10.1.105.254
  network 10.1.105.0 mask 24
 
@@ -997,7 +998,7 @@ interface range GigabitEthernet 0/0/1 to GigabitEthernet 0/0/20
 #X_T1_AGG1 ->X_T1_ACC1 -> dis mac-address
 domain ap_noauthen mac-authen force mac-address 446a-2e0e-b5a0 mask ffff-ffff-ffff
 
-#X_T2_AGG1 ->X_T2_ACC1 -> dis mac-address
+#X_T2_AGG1 ->X_T2_ACC2 -> dis mac-address
 domain ap_noauthen mac-authen force mac-address 446a-2e0e-ad00 mask ffff-ffff-ffff
 
 //window 服务
@@ -1026,15 +1027,15 @@ acl number 3000
 //重定向
 
 interface vlan 51
- traffic-redirect inbound acl 3000 vpn-instance Employee nexthop 10.1.200.22
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
 interface vlan 52
- traffic-redirect inbound acl 3000 vpn-instance Employee nexthop 10.1.200.22
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
 interface vlan 53
- traffic-redirect inbound acl 3000 vpn-instance Employee nexthop 10.1.200.22
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
 interface vlan 54
- traffic-redirect inbound acl 3000 vpn-instance Employee nexthop 10.1.200.22
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
 interface vlan 55
- traffic-redirect inbound acl 3000 vpn-instance Employee nexthop 10.1.200.22
+ traffic-redirect inbound acl 3000 vpn-instance Employee ip-nexthop 10.1.200.22
 
 
 #X_T1_FW1
@@ -1044,7 +1045,6 @@ security-policy
  //开启默认拒绝区域内流量访问
  default packet-filer intrazone enable
  
-//全局下定义地址段wlan
 ip address-set wlan type group
   address 10.1.51.0 mask 24
   address 10.1.52.0 mask 24
@@ -1057,11 +1057,11 @@ security-policy
   source-zone trust
   destination-zone trust
   source-address address-set wlan
-  destination 10.1.60.100 255.255.255.255
+  destination-address 10.1.60.100 mask 255.255.255.255
   action permit 
 
 
-//外部无线用户只可以访问服务器网段的HTTP 服务（服务名Guest_Service), ip 10.1.60.99, port 3380 (TCP)
+//外部无线用户只可以访问服务器网段的HTTP 服务（服务名Guest_Service), ip 10.1.60.99, port 3389 (TCP)
 
 switch vsys Guest
 
@@ -1222,7 +1222,7 @@ security-policy
   destination-address address-set YZStore
   action permit 
 
- rule name X_TO_Z
+ rule name Z_TO_X
   source-zone untrust
   destination-zone trust
   source-address address-set YZStore
