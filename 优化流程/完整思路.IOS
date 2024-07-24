@@ -725,23 +725,23 @@ wlan
 
 dhcp enable
 
-ip pool wire_finace1
+ip pool wire_finance1
  vpn-instance Employee
  gateway-list 10.1.31.254
  network 10.1.31.0 mask 24
-ip pool wire_finace2
+ip pool wire_finance2
  vpn-instance Employee
  gateway-list 10.1.32.254
  network 10.1.32.0 mask 24
-ip pool wire_finace3
+ip pool wire_finance3
  vpn-instance Employee
  gateway-list 10.1.33.254
  network 10.1.33.0 mask 24
-ip pool wire_finace4
+ip pool wire_finance4
  vpn-instance Employee
  gateway-list 10.1.34.254
  network 10.1.34.0 mask 24
-ip pool wire_finace5
+ip pool wire_finance5
  vpn-instance Employee
  gateway-list 10.1.35.254
  network 10.1.35.0 mask 24
