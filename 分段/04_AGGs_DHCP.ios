@@ -1,0 +1,141 @@
+# X_T1_AGG1
+
+dhcp enable
+vlan batch 11 to 15 21 to 25
+
+int vlan 11 
+ ip add 10.1.11.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 12
+ ip add 10.1.12.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 13 
+ ip add 10.1.13.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 14 
+ ip add 10.1.14.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 15 
+ ip add 10.1.15.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+
+int vlan 21 
+ ip add 10.1.21.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 22
+ ip add 10.1.22.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 23 
+ ip add 10.1.23.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 24 
+ ip add 10.1.24.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+int vlan 25 
+ ip add 10.1.25.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+
+ospf 1 router-id 10.1.0.6 
+ area 1
+  network 10.1.0.6 0.0.0.0
+  network 10.1.11.254 0.0.0.0
+  network 10.1.12.254 0.0.0.0
+  network 10.1.13.254 0.0.0.0
+  network 10.1.14.254 0.0.0.0
+  network 10.1.15.254 0.0.0.0
+  network 10.1.21.254 0.0.0.0
+  network 10.1.22.254 0.0.0.0
+  network 10.1.23.254 0.0.0.0
+  network 10.1.24.254 0.0.0.0
+  network 10.1.25.254 0.0.0.0
+  network 10.1.200.30 0.0.0.0
+
+int Eth-t 2
+ p h u v 11 to 15 21 to 25
+
+int Eth-t 3
+ p h u v 11 to 15 21 to 25
+
+
+# X_T2_AGG1
+
+dhcp enable
+vlan batch 100 209 31 to 35 41 to 45
+
+int Loopback0
+ ip add 10.1.0.7 32
+
+int vlan 209
+ ip add 10.1.200.34 30
+
+int vlan 31 
+ ip add 10.1.31.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 32
+ ip add 10.1.32.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 33 
+ ip add 10.1.33.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 34
+ ip add 10.1.34.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 35
+ ip add 10.1.35.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+
+int vlan 41 
+ ip add 10.1.41.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 42
+ ip add 10.1.42.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 43 
+ ip add 10.1.43.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 44
+ ip add 10.1.44.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+int vlan 45
+ ip add 10.1.45.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33
+
+ospf 1 router-id 10.1.0.7
+ area 1 
+  network 10.1.0.7 0.0.0.0
+  network 10.1.31.254 0.0.0.0
+  network 10.1.32.254 0.0.0.0
+  network 10.1.33.254 0.0.0.0
+  network 10.1.34.254 0.0.0.0
+  network 10.1.35.254 0.0.0.0
+  network 10.1.41.254 0.0.0.0
+  network 10.1.42.254 0.0.0.0
+  network 10.1.43.254 0.0.0.0
+  network 10.1.44.254 0.0.0.0
+  network 10.1.45.254 0.0.0.0
+  network 10.1.200.34 0.0.0.0
+
+int Eth-t 2
+ p h u v 31 to 35 41 to 45
+int Eth-t 3
+ p h u v 31 to 35 41 to 45
