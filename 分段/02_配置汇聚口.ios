@@ -1,0 +1,56 @@
+# X_T1_Core1
+
+vlan batch 51 to 55  60 100 to 105 201 to 209
+
+interface Eth-trunk 2
+ p l t 
+ p t a v 100 209
+ mode lacp
+ trunkport GigabitEthernet 0/0/21 0/0/22 1/0/21 1/0/22
+
+
+# X_T2_AGG1
+
+vlan batch 100 209
+
+interface Eth-trunk 1 
+ p l t 
+ p t a v 100 209
+ mode lacp
+ trunkport GigabitEthernet 0/0/23 0/0/24 1/0/23 1/0/24
+
+interface Eth-trunk 2
+ p l h
+ p h t v 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/22 1/0/22
+
+interface Eth-trunk 3
+ p l h
+ p h t v 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/21 1/0/21
+
+# X_T2_ACC1
+
+vlan 100
+q
+interface Eth-trunk 1
+ p l t
+ p t a v 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/23 0/0/24
+
+# X_T2_ACC2
+
+vlan 100 
+q
+interface Eth-trunk 1
+ p l t 
+ p t a v 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/23 0/0/24
+
+interface GigabitEthernet 0/0/22
+ p l a
+ p d v 100

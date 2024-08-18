@@ -1,0 +1,37 @@
+# X_T2_AGG1-1
+sys
+stack slot 0 priority 200
+interface stack-port 0/1
+ port interface XGigabitEthernet 0/0/1 enable
+ shutdown interface XGigabitEthernet 0/0/1
+
+interface stack-port 0/2
+ port interface XGigabitEthernet 0/0/2 enable
+ shutdown interface XGigabitEthernet 0/0/2
+
+
+# X_T2_AGG1-2
+
+sys
+stack slot 0 priority 100
+stack slot 0 renumber 1
+
+interface stack-port 0/1
+ port interface XGigabitEthernet 0/0/2 enable
+
+interface stack-port 0/2
+ port interface XGigabitEthernet 0/0/1 enable
+
+save
+
+reboot fast
+
+
+# X_T2_AGG1-1
+
+interface stack-port 0/1
+ undo shutdown interface XGigabitEthernet 0/0/1
+
+interface stack-port 0/2
+ undo shutdown interface XGigabitEthernet 0/0/2
+
