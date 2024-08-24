@@ -1,0 +1,36 @@
+//首先是配置堆叠
+
+#X_T2_AGG1-1
+//设置优先级
+stack slot 0 priority 200
+interface stack-port 0/1
+ port interface XGigabitEthernet 0/0/1 enable
+ //关掉接口
+ shutdown interface XGigabitEthernet 0/0/1
+
+interface stack-port 0/2
+ port interface XGigabitEthernet 0/0/2 enable
+ //关掉接口
+ shutdown interface XGigabitEthernet 0/0/2
+
+#X_T2_AGG1-2
+stack slot 0 priority 100
+stack slot 0 renumber 1
+
+interface stack-port 0/1
+ port interface XGigabitEthernet 0/0/2 enable
+interface stack-port 0/2
+ port interface XGigabitEthernet 0/0/1 enable
+
+//保存配置
+<huawei>save
+//重启设备 重新选举堆叠设备的主备
+<huawei>reboot fast
+
+#X_T2_AGG1-1
+interface stack-port 0/1
+ undo shutdown interface XGigabitEthernet 0/0/1
+interface stack-port 0/2
+ undo shutdown interface XGigabitEthernet 0/0/2
+
+//验证dis stack
