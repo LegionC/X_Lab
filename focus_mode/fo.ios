@@ -41,7 +41,6 @@ interface stack-port 0/2
 
 vlan batch 100 209
 
-//开始链路聚合
 interface Eth-Trunk 2
  port link-type trunk
  port trunk allow-pass vlan 100 209
@@ -100,3 +99,80 @@ interface GigabitEthernet 0/0/22
  port default vlan 100
 
 //验证方式 dis eth-trunk [数字]
+
+
+//配置设备的接口
+#X_T1_Export1
+//配置名称
+sys X_T1_Export1
+
+//配置vlan 
+vlan 201
+q
+//开始配置接口
+int vlan 201
+ ip add 10.1.200.1 30
+
+interface GigabitEthernet 0/0/1
+ port link-type access
+ port default vlan 201
+
+interface GigabitEthernet 0/0/9
+ undo portswitch
+ ip add 10.255.1.1 24
+
+interface GigabitEthernet 0/0/10
+ undo portswitch
+ ip add 10.255.2.1 24
+
+//配置默认静态路由 去往 ISP
+
+ip route-static 0.0.0.0 0 10.255.1.254 
+ip route-static 0.0.0.0 0 10.255.2.254 
+
+//配置ospf 1 area 0
+ospf 1 router-id 10.1.0.1 
+ //宣告默认路由
+ default-route-advertise
+ area 0
+  network 10.1.0.1   0.0.0.0
+  network 10.1.200.1 0.0.0.0
+
+#X_T1_Export2
+//配置名称
+sys X_T1_Export2
+
+//配置vlan 
+vlan 202
+q
+//开始配置接口
+int vlan 202
+ip add 10.1.200.5 30
+
+interface GigabitEthernet 0/0/1
+ port link-type access
+ port default vlan 202
+
+interface GigabitEthernet 0/0/9
+ undo portswitch
+ ip add 10.255.3.1 24
+
+interface GigabitEthernet 0/0/10
+ undo portswitch
+ ip add 10.255.4.1 24
+
+interface Loopback0
+ ip add 10.1.0.2 32
+
+//配置默认静态路由 去往 ISP
+
+ip route-static 0.0.0.0 0 10.255.3.254 
+ip route-static 0.0.0.0 0 10.255.4.254 
+
+//配置ospf 1 area 0
+ospf 1 router-id 10.1.0.2 
+ //宣告默认路由
+ default-route-advertise
+ area 0
+  network 10.1.0.2   0.0.0.0
+  network 10.1.200.5 0.0.0.0
