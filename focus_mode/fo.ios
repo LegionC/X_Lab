@@ -176,3 +176,148 @@ ospf 1 router-id 10.1.0.2
  area 0
   network 10.1.0.2   0.0.0.0
   network 10.1.200.5 0.0.0.0
+
+//配置Core设备的vlan 接口ip；vpn实例；ospf 1 2(Employee) 3(Guest)
+#X_T1_Core1
+ 
+vlan batch vlan 51 to 55 60 100 to 105 201 to 209
+
+//配置每个接口 
+interface GigabitEthernet 0/0/1
+ port link-type access
+ port default vlan 201
+
+interface GigabitEthernet 0/0/2
+ port link-type access
+ port default vlan 202
+
+interface GigabitEthernet 0/0/3
+ port link-type trunk
+ port trunk allow-pass vlan 51 to 55 100 to 105 203
+
+interface GigabitEthernet 0/0/4
+ port link-type trunk
+ port trunk allow-pass vlan 204 205
+ undo port trunk allow-pass vlan 1
+
+interface GigabitEthernet 0/0/5
+ port link-type trunk
+ port trunk allow-pass vlan 206 207
+ undo port trunk allow-pass vlan 1
+
+interface GigabitEthernet 0/0/6
+ port link-type access
+ port default vlan 60
+
+//创建vpn-instance
+ip vpn-instance Employee
+ route-distinguisher 65001:1
+ip vpn-instance Guest
+ route-distinguisher 65001:2
+
+//配置vlanif 接口们
+
+int vlan 201
+ ip add 10.1.200.2 30
+int vlan 202
+ ip add 10.1.200.6 30
+int vlan 203
+ ip add 10.1.200.9 30
+int vlan 204
+ ip add 10.1.200.13 30
+int vlan 205
+ ip add 10.1.200.17 30
+
+int vlan 206
+ ip binding vpn-instance Employee
+ ip add 10.1.200.21 30
+
+int vlan 207
+ ip binding vpn-instance Guest
+ ip add 10.1.200.25 30
+
+int vlan 208
+ ip binding vpn-instance Employee
+ ip add 10.1.200.29 30
+int vlan 209
+ ip binding vpn-instance Employee
+ ip add 10.1.200.33 30
+
+interface Loopback 1
+ ip binding vpn-instance Employee
+ ip add 10.1.0.4 32
+interface Loopback 2
+ ip binding vpn-instance Guest
+ ip add 10.1.0.5 32
+
+interface vlan 51 
+ ip binding vpn-instance Employee
+ ip add 10.1.51.254 24
+interface vlan 52 
+ ip binding vpn-instance Employee
+ ip add 10.1.52.254 24
+interface vlan 53
+ ip binding vpn-instance Employee
+ ip add 10.1.53.254 24
+interface vlan 54 
+ ip binding vpn-instance Employee
+ ip add 10.1.54.254 24
+interface vlan 55 
+ ip binding vpn-instance Employee
+ ip add 10.1.55.254 24
+interface vlan 60 
+ ip binding vpn-instance Employee
+ ip add 10.1.60.254 24
+
+interface vlan 101  
+ ip binding vpn-instance Guest
+ ip add 10.1.101.254 24
+interface vlan 102  
+ ip binding vpn-instance Guest
+ ip add 10.1.102.254 24
+interface vlan 103 
+ ip binding vpn-instance Guest
+ ip add 10.1.103.254 24
+interface vlan 104  
+ ip binding vpn-instance Guest
+ ip add 10.1.104.254 24
+interface vlan 105  
+ ip binding vpn-instance Guest
+ ip add 10.1.105.254 24
+
+//建立ospf 
+ospf 1 router-id 10.1.0.3
+ area 0 
+  network 10.1.0.3    0.0.0.0
+  network 10.1.200.2  0.0.0.0
+  network 10.1.200.6  0.0.0.0
+  network 10.1.200.9  0.0.0.0
+ area 1
+  network 10.1.200.13 0.0.0.0
+ area 2
+  network 10.1.200.17 0.0.0.0
+
+ospf 2 router-id 10.1.0.4 vpn-instance Employee
+ vpn-instance-capability simple
+ area 1
+  network 10.1.0.4    0.0.0.0
+  network 10.1.51.254 0.0.0.0
+  network 10.1.52.254 0.0.0.0
+  network 10.1.53.254 0.0.0.0
+  network 10.1.54.254 0.0.0.0
+  network 10.1.55.254 0.0.0.0
+  network 10.1.60.254 0.0.0.0
+  network 10.1.200.21 0.0.0.0
+  network 10.1.200.29 0.0.0.0
+  network 10.1.200.33 0.0.0.0
+
+ospf 3 router-id 10.1.0.5 vpn-instance Guest
+ vpn-instance-capability simple
+ area 2
+  network 10.1.0.5     0.0.0.0
+  network 10.1.101.254 0.0.0.0
+  network 10.1.102.254 0.0.0.0
+  network 10.1.103.254 0.0.0.0
+  network 10.1.104.254 0.0.0.0
+  network 10.1.105.254 0.0.0.0
+  network 10.1.200.25  0.0.0.0
