@@ -321,3 +321,19 @@ ospf 3 router-id 10.1.0.5 vpn-instance Guest
   network 10.1.104.254 0.0.0.0
   network 10.1.105.254 0.0.0.0
   network 10.1.200.25  0.0.0.0
+
+//配置 AC1 的vlan;ospf 1 area 0
+#X_T1_AC1
+//加一些vlan
+vlan batch 51 to 55 100 to 105 203
+//改int g0/0/1 trunk allow vlan
+int g0/0/1
+ p t a v 51 to 55 100 to 105 203
+
+//配置ospf 
+ospf 1 router-id 10.1.0.11
+ area 0 
+  network 10.1.0.11 0.0.0.0
+  network 10.1.100.254 0.0.0.0
+  network 10.1.200.10 0.0.0.0
+
