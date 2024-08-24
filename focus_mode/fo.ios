@@ -417,3 +417,31 @@ ospf 3 router-id 10.1.0.9 vpn-instance Guest
   network 10.1.0.9    0.0.0.0
   network 10.1.200.18 0.0.0.0
   network 10.1.200.26 0.0.0.0
+
+//为了让防火墙能够建立邻居关系 需要设置安全策略 security-policy Employee & Guest 虚拟系统上都要
+
+switch vsys Employee
+ security-policy
+  rule name permit_ospf_in 
+   source-zone trust untrust
+   destination-zone local 
+   service ospf 
+   action permit
+  rule name permit_ospf_out
+   source-zone local
+   destination-zone trust untrust 
+   service ospf 
+   action permit
+
+switch vsys Guest
+ security-policy
+  rule name permit_ospf_in 
+   source-zone trust untrust
+   destination-zone local 
+   service ospf 
+   action permit
+  rule name permit_ospf_out
+   source-zone local
+   destination-zone trust untrust 
+   service ospf 
+   action permit
