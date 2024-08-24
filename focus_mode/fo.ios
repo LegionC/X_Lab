@@ -445,3 +445,166 @@ switch vsys Guest
    destination-zone trust untrust 
    service ospf 
    action permit
+
+
+//T1_AGG1 & T2_AGG1 dhcp; vlan; dhcp 中继；ospf 
+
+#X_T1_AGG1
+
+//开启dhcp
+dhcp enable
+//创建 vlan 11 to 15 21 to 25
+vlan batch vlan 11 to 15 21 to 25
+
+//创建vlan 11 to 15 的网关 21 to 25 的网关
+//并且开启 dhcp 中继模式
+//X_T1_AGG1 的中继是core 的vlan 208
+
+interface vlan 11
+ ip add 10.1.11.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 12
+ ip add 10.1.12.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 13
+ ip add 10.1.13.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 14
+ ip add 10.1.14.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 15
+ ip add 10.1.15.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 21
+ ip add 10.1.21.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 22
+ ip add 10.1.22.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 23
+ ip add 10.1.23.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 24
+ ip add 10.1.24.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+interface vlan 25
+ ip add 10.1.25.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.29
+
+//建立ospf 邻居 ospf1 area 1 Employee
+
+ospf 1 router-id 10.1.0.6
+ area 1
+  network 10.1.0.6    0.0.0.0
+  network 10.1.11.254 0.0.0.0
+  network 10.1.12.254 0.0.0.0
+  network 10.1.13.254 0.0.0.0
+  network 10.1.14.254 0.0.0.0
+  network 10.1.15.254 0.0.0.0
+  network 10.1.21.254 0.0.0.0
+  network 10.1.22.254 0.0.0.0
+  network 10.1.23.254 0.0.0.0
+  network 10.1.24.254 0.0.0.0
+  network 10.1.25.254 0.0.0.0
+  network 10.1.200.30 0.0.0.0
+
+//在eth-trunk 2 和3 放通 11 to 15 21 to 25
+interface Eth-Trunk 2
+ port hybrid untagged vlan 11 to 15 21 to 25
+
+interface Eth-Trunk 3
+ port hybrid untagged vlan 11 to 15 21 to 25 
+
+#X_T2_AGG1
+//开启dhcp
+dhcp enable
+
+//创建和core互通 和ac互通的vlan 209 100
+vlan batch 100 209
+
+//创建loopback0
+interface Loopback 0
+ ip add 10.1.0.7 32
+
+//创建vlan 209 地址
+interface vlan 209
+ ip add 10.1.200.34 30
+//创建vlan 31 to 35 41 to 45 网关
+vlan batch 31 to 35 41 to 45
+
+//开启dhcp 中继模式
+//X_T2_AGG1 的 中继是core 的vlan 209
+interface vlan 31 
+ ip add 10.1.31.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 32 
+ ip add 10.1.32.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 33 
+ ip add 10.1.33.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 34
+ ip add 10.1.34.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 35
+ ip add 10.1.35.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 41 
+ ip add 10.1.41.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 42 
+ ip add 10.1.42.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 43 
+ ip add 10.1.43.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 44
+ ip add 10.1.44.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+interface vlan 45
+ ip add 10.1.45.254 24
+ dhcp select relay
+ dhcp relay server-ip 10.1.200.33 
+
+//建立ospf ospf 1 area 1 employee
+
+ospf 1 router-id 10.1.0.7
+ area 1
+  network 10.1.0.7    0.0.0.0
+  network 10.1.31.254 0.0.0.0
+  network 10.1.32.254 0.0.0.0
+  network 10.1.33.254 0.0.0.0
+  network 10.1.34.254 0.0.0.0
+  network 10.1.35.254 0.0.0.0
+  network 10.1.41.254 0.0.0.0
+  network 10.1.42.254 0.0.0.0
+  network 10.1.43.254 0.0.0.0
+  network 10.1.44.254 0.0.0.0
+  network 10.1.45.254 0.0.0.0
+  network 10.1.200.34 0.0.0.0
+
+//在eth-trunk 2 和3 放通 31 to 35 41 to 45
+interface Eth-Trunk 2
+ port hybrid untagged vlan 31 to 35 41 to 45
+
+interface Eth-Trunk 3
+ port hybrid untagged vlan 31 to 35 41 to 45 
