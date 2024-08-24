@@ -34,3 +34,69 @@ interface stack-port 0/2
  undo shutdown interface XGigabitEthernet 0/0/2
 
 //验证dis stack
+
+//配置链路聚合
+#X_T1_Core1
+//创建vlan 100 209
+
+vlan batch 100 209
+
+//开始链路聚合
+interface Eth-Trunk 2
+ port link-type trunk
+ port trunk allow-pass vlan 100 209
+ mode lacp 
+ trunkport GigabitEthernet 0/0/21 0/0/22 1/0/21 1/0/22
+
+
+#X_T2_AGG1
+//创建vlan 100 209
+vlan batch 100 209
+//链路聚合
+interface Eth-Trunk 1
+ port link-type trunk
+ port trunk allow-pass vlan 100 209
+ mode lacp
+ trunkport GigabitEthernet 0/0/23 0/0/24 1/0/23 1/0/24
+
+ 
+interface Eth-Trunk 2
+ port link-type hybrid
+ port hybrid tagged vlan 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/22 1/0/22
+
+interface Eth-Trunk 3
+ port link-type hybrid
+ port hybrid tagged vlan 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/21 1/0/21
+
+#X_T2_ACC1
+//创建vlan 100
+vlan 100
+q
+//链路聚合
+interface Eth-Trunk 1
+ port link-type trunk
+ port trunk allow-pass vlan 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/23 0/0/24
+
+
+#X_T2_ACC2
+vlan 100
+q
+//链路聚合
+interface Eth-Trunk 1
+ port link-type trunk
+ port trunk allow-pass vlan 100
+ mode lacp
+ trunkport GigabitEthernet 0/0/23 0/0/24
+
+//g0/0/22 放通vlan 100 access
+interface GigabitEthernet 0/0/22
+ port link-type access
+ port default vlan 100
+
+//验证方式 dis eth-trunk [数字]
