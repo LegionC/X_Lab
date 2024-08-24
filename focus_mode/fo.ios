@@ -337,3 +337,83 @@ ospf 1 router-id 10.1.0.11
   network 10.1.100.254 0.0.0.0
   network 10.1.200.10 0.0.0.0
 
+//配置fw vlan batch;vlanif,Loopback;开启vsys
+#X_T1_FW1
+
+//配置 vlan batch
+vlan batch 204 to 207
+
+//配置vlanif & 接口
+
+interface GigabitEthernet 0/0/1
+ portswitch
+ undo shutdown
+ p l t 
+ p t a v 204 205
+ u p t a v 1
+interface GigabitEthernet 0/0/2
+ portswitch
+ undo shutdown
+ p l t 
+ p t a v 206 207
+ u p t a v 1
+
+int lo1
+ ip add 10.1.0.8 32
+int lo2 
+ ip add 10.1.0.9 32
+
+int vlan 204
+ ip add 10.1.200.14 30
+int vlan 205 
+ ip add 10.1.200.18 30
+int vlan 206 
+ ip add 10.1.200.22 30
+int vlan 207
+ ip add 10.1.200.26 30 
+
+//开启vsys 
+//assign interface
+
+vsys enable
+vsys name Employee
+ assign interface Loopback 1
+ assign vlan 204
+ assign vlan 206
+
+vsys name Guest
+ assign interface Loopback 2
+ assign vlan 205
+ assign vlan 207
+
+//重新刷一下接口地址
+
+//把vlan 分配到不同的firewall zone 
+switch vsys Employee
+ sys
+ firewall zone untrust
+  add interface vlan 204
+ firewall zone trust
+  add interface vlan 206
+
+switch vsys Guest
+ sys
+ firewall zone untrust
+  add interface vlan 205
+ firewall zone trust
+  add interface vlan 207
+
+//配置ospf 2 3
+ospf 2 router-id 10.1.0.8 vpn-instance Employee
+ vpn-instance-capability simple
+ area 1 
+  network 10.1.0.8    0.0.0.0
+  network 10.1.200.14 0.0.0.0
+  network 10.1.200.22 0.0.0.0
+
+ospf 3 router-id 10.1.0.9 vpn-instance Guest
+ vpn-instance-capability simple
+ area 2
+  network 10.1.0.9    0.0.0.0
+  network 10.1.200.18 0.0.0.0
+  network 10.1.200.26 0.0.0.0
