@@ -650,3 +650,10 @@ ip ip-prefix guest deny 10.1.105.0 0 24
 
 ip ip-prefix guest permit 0.0.0.0 0 less-equal 32 
 
+//在core ospf 1 area 1  area 2 分别应用 filter两个 ip-prefix
+
+ospf 1
+ area 1
+  filter ip-prefix guest import 
+ area 2
+  filter ip-prefix employee import
