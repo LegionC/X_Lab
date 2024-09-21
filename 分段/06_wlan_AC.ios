@@ -1,0 +1,68 @@
+#X_T2_ACC2
+//放通vlan100 确保AP能获取到地址上线
+
+vlan 100
+q
+interface GigabitEthernet0/0/22
+ port link-type access
+ port default vlan 100
+
+
+#X_T1_AC1
+
+wlan 
+ ap auth-mode no-auth
+
+vlan pool vlan51 
+ vlan 51 to 55
+
+vlan pool vlan101
+ vlan 101 to 105
+
+wlan
+ regulatory-domain-profile name hcie
+  country-code cn
+
+ ap-group name X 
+  regulatory-domain-profile hcie
+
+ security-profile name employee
+  security wpa-wpa2 psk pass-phrase Huawei@123 aes
+
+ security-profile name guest 
+  security wpa-wpa2 psk pass-phrase Huawei@123 aes
+
+ ssid-profile name employee
+  ssid X_Employee_001
+ 
+ ssid-profile name guest
+  ssid X_Guest_001 
+
+ vap-profile name employee
+  forward-mode tunnel
+  service-vlan vlan-pool vlan51
+  security-profile employee
+  ssid-profile employee
+
+ vap-profile name guest
+  forward-mode tunnel
+  service-vlan vlan-pool vlan101
+  security-profile guest
+  ssid-profile guest
+
+ ap-id 0
+  ap-group X 
+  ap-name X_T1_AP1
+
+ ap-id 1
+  ap-group X 
+  ap-name X_T2_AP1
+
+ ap-group name X 
+  vap-profile guest wlan 1 radio all
+  vap-profile employee wlan 2 radio all
+
+ ap auth-mode mac-auth
+
+
+ 
